@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="RTC Offline">
+  <rect width="512" height="512" rx="96" fill="#0f766e"/>
+  <path d="M116 168c0-28.7 23.3-52 52-52h176c28.7 0 52 23.3 52 52v108c0 28.7-23.3 52-52 52H224l-76 68c-12.4 11.1-32 2.3-32-14.4V168z" fill="#ffffff"/>
+  <circle cx="190" cy="222" r="20" fill="#f59e0b"/>
+  <circle cx="256" cy="222" r="20" fill="#0f766e"/>
+  <circle cx="322" cy="222" r="20" fill="#7c3f12"/>
+</svg>

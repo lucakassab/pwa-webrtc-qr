@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f766e">
+    <meta name="description" content="PWA offline-first para testar chat WebRTC DataChannel com pareamento por QR Code.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="RTC Offline">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="stylesheet" href="./style.css">
+    <title>PWA WebRTC Offline Chat</title>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Offline-first PWA</p>
+          <h1>WebRTC Chat Test</h1>
+        </div>
+        <output id="connectionStatus" class="status-pill">Aguardando modo</output>
+      </header>
+
+      <section class="toolbar" aria-label="Controles principais">
+        <button id="installBtn" type="button">Instalar/Verificar PWA</button>
+        <button id="hostBtn" type="button">Modo Host</button>
+        <button id="clientBtn" type="button">Modo Client</button>
+        <button id="bluetoothBtn" type="button" class="ghost">Bluetooth experimental</button>
+      </section>
+
+      <section id="installHelp" class="install-help">
+        <strong>Instalacao do PWA:</strong>
+        no Android/Chrome, use o botao acima quando o prompt estiver disponivel. No iPhone, use Safari > Compartilhar > Adicionar a Tela de Inicio.
+        <output id="installDiagnostics"></output>
+        <pre id="installDetails"></pre>
+      </section>
+
+      <section class="panel qr-panel" aria-labelledby="qrTitle">
+        <div class="panel-heading">
+          <h2 id="qrTitle">Pareamento por QR Code</h2>
+          <span id="qrStatus" class="status-pill">Sem QR local</span>
+        </div>
+
+        <div class="qr-layout">
+          <section class="qr-local" aria-labelledby="qrLocalTitle">
+            <div class="subheading">
+              <h3 id="qrLocalTitle">QR local</h3>
+              <output id="qrCounter">0/0</output>
+            </div>
+            <div id="qrCode" class="qr-code" aria-live="polite">
+              <p>Escolha Host ou Client para gerar a sinalizacao.</p>
+            </div>
+            <div class="qr-actions">
+              <button id="qrPrevBtn" type="button" class="ghost" disabled>Anterior</button>
+              <button id="qrNextBtn" type="button" class="ghost" disabled>Proximo</button>
+            </div>
+          </section>
+
+          <section class="qr-scanner" aria-labelledby="qrScannerTitle">
+            <div class="subheading">
+              <h3 id="qrScannerTitle">Scanner remoto</h3>
+              <output id="qrScanProgress">0/0</output>
+            </div>
+            <div class="video-box">
+              <video id="qrVideo" playsinline muted></video>
+              <canvas id="qrCanvas" hidden></canvas>
+              <p id="qrVideoPlaceholder">A camera aparecera aqui.</p>
+            </div>
+            <div class="qr-actions">
+              <button id="scanQrBtn" type="button">Escanear QR remoto</button>
+              <button id="stopScanBtn" type="button" class="ghost" disabled>Parar scanner</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="grid">
+        <section class="panel chat-panel" aria-labelledby="chatTitle">
+          <div class="panel-heading">
+            <h2 id="chatTitle">Mensagens</h2>
+            <span id="modeBadge" class="mode-badge">Sem modo</span>
+          </div>
+
+          <div id="messages" class="messages" aria-live="polite"></div>
+
+          <form id="messageForm" class="message-form">
+            <label class="sr-only" for="messageInput">Mensagem</label>
+            <input id="messageInput" type="text" autocomplete="off" placeholder="Digite uma mensagem" maxlength="1000">
+            <button id="sendBtn" type="submit" disabled>Enviar</button>
+          </form>
+        </section>
+
+        <section class="panel signal-panel" aria-labelledby="signalTitle">
+          <div class="panel-heading">
+            <h2 id="signalTitle">Sinalizacao</h2>
+            <button id="copySignalBtn" type="button" class="ghost">Copiar dados locais</button>
+          </div>
+
+          <label for="localSignal">Dados locais para enviar ao outro dispositivo</label>
+          <textarea id="localSignal" readonly spellcheck="false" placeholder="A offer ou answer criada neste dispositivo aparecera aqui."></textarea>
+
+          <label for="remoteSignal">Dados recebidos do outro dispositivo</label>
+          <textarea id="remoteSignal" spellcheck="false" placeholder="Cole aqui a offer do Host ou a answer do Client."></textarea>
+
+          <div class="signal-actions">
+            <button id="importSignalBtn" type="button">Importar dados recebidos</button>
+            <button id="sendBluetoothBtn" type="button" class="ghost">Enviar sinal por Bluetooth</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel logs-panel" aria-labelledby="logsTitle">
+        <div class="panel-heading">
+          <h2 id="logsTitle">Logs</h2>
+          <button id="clearLogsBtn" type="button" class="ghost">Limpar logs</button>
+        </div>
+        <pre id="logs" aria-live="polite"></pre>
+      </section>
+    </main>
+
+    <script src="./vendor/qrcode.min.js" defer></script>
+    <script src="./vendor/jsQR.js" defer></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
