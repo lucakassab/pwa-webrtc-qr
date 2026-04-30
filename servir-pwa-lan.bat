@@ -5,6 +5,8 @@ cd /d "%~dp0"
 
 set "PORT=8443"
 if not "%~1"=="" set "PORT=%~1"
+set "CERT_HTTP_PORT=8080"
+if not "%~2"=="" set "CERT_HTTP_PORT=%~2"
 
 set "PYTHON_CMD="
 where py >nul 2>nul
@@ -25,6 +27,9 @@ for /f "usebackq delims=" %%I in (`powershell -NoProfile -ExecutionPolicy Bypass
 
 set "CERT_FILE=%CD%\certs\pwa-local.crt"
 set "KEY_FILE=%CD%\certs\pwa-local.key"
+set "CERT_DOWNLOAD_DIR=%CD%\cert-download"
+set "CERT_DOWNLOAD_FILE=%CERT_DOWNLOAD_DIR%\rootCA.pem"
+set "CERT_DOWNLOAD_CRT=%CERT_DOWNLOAD_DIR%\rootCA.crt"
 set "SERVER_FILE=%TEMP%\pwa_https_server_%RANDOM%.py"
 
 echo.
@@ -34,6 +39,7 @@ echo ============================================================
 echo.
 echo Pasta: %CD%
 echo Porta: %PORT%
+echo Porta HTTP para certificado: %CERT_HTTP_PORT%
 echo IP provavel do PC: %LAN_IP%
 echo.
 
@@ -87,12 +93,27 @@ where mkcert >nul 2>nul
 if %ERRORLEVEL%==0 (
   echo CA local do mkcert para instalar/confiar no iPhone:
   mkcert -CAROOT
+  if not exist "%CERT_DOWNLOAD_DIR%" mkdir "%CERT_DOWNLOAD_DIR%"
+  for /f "usebackq delims=" %%C in (`mkcert -CAROOT`) do copy /Y "%%C\rootCA.pem" "%CERT_DOWNLOAD_FILE%" >nul
+  if exist "%CERT_DOWNLOAD_FILE%" copy /Y "%CERT_DOWNLOAD_FILE%" "%CERT_DOWNLOAD_CRT%" >nul
+  if exist "%CERT_DOWNLOAD_FILE%" (
+    echo Certificado publico disponivel no site:
+    echo   https://%LAN_IP%:%PORT%/cert-download/rootCA.pem
+    echo   https://%LAN_IP%:%PORT%/cert-download/rootCA.crt
+    echo.
+    echo Se o download HTTPS travar no Android, use o link HTTP:
+    echo   http://%LAN_IP%:%CERT_HTTP_PORT%/cert-download/rootCA.crt
+  )
   echo.
 )
 echo Se o iPhone avisar que o certificado nao e confiavel, instale/confiar no
 echo certificado antes de tentar Adicionar a Tela de Inicio.
 echo Pressione Ctrl+C para parar.
 echo.
+
+if exist "%CERT_DOWNLOAD_CRT%" (
+  start "PWA Cert HTTP" /min cmd /c "%PYTHON_CMD% -m http.server %CERT_HTTP_PORT% --bind 0.0.0.0"
+)
 
 > "%SERVER_FILE%" echo import http.server
 >> "%SERVER_FILE%" echo import ssl

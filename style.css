@@ -166,6 +166,23 @@ h3 {
   color: #6f3f0b;
 }
 
+.cert-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  margin: 10px 0 2px;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #ffffff;
+  color: #6f3f0b;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.cert-link:hover {
+  color: var(--accent-dark);
+}
+
 .install-help output {
   display: block;
   margin-top: 6px;

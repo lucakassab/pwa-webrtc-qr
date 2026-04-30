@@ -1,4 +1,5 @@
 certs/
+cert-download/
 *.pem
 *.key
 *.crt

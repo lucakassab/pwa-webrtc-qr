@@ -31,6 +31,8 @@ const els = {
   installHelp: document.querySelector("#installHelp"),
   installDiagnostics: document.querySelector("#installDiagnostics"),
   installDetails: document.querySelector("#installDetails"),
+  certDownloadLink: document.querySelector("#certDownloadLink"),
+  certHttpDownloadLink: document.querySelector("#certHttpDownloadLink"),
   qrStatus: document.querySelector("#qrStatus"),
   qrCode: document.querySelector("#qrCode"),
   qrCounter: document.querySelector("#qrCounter"),
@@ -71,6 +73,7 @@ function init() {
   bindEvents();
   registerServiceWorker();
   updateInstallHelp();
+  updateCertificateLink();
   updateConnectionStatus("Aguardando modo");
   updateQrDisplay();
   log("App iniciado. Use Host no Quest e Client no iPhone/Android, ou o inverso para testes.");
@@ -192,6 +195,22 @@ async function updateInstallHelp(forcedText) {
   const swReady = "serviceWorker" in navigator ? Boolean(await navigator.serviceWorker.getRegistration()) : false;
   els.installDiagnostics.textContent = forcedText || buildInstallDiagnostics(swReady, standalone);
   runInstallabilityDiagnostics();
+}
+
+function updateCertificateLink() {
+  if (!els.certDownloadLink || !els.certHttpDownloadLink) {
+    return;
+  }
+
+  const host = window.location.hostname;
+  const isLocalLan = host === "localhost" || host === "127.0.0.1" || host.startsWith("192.168.") || host.startsWith("10.") || /^172\.(1[6-9]|2\d|3[0-1])\./.test(host);
+  const isGithubPages = host.endsWith("github.io");
+  const shouldShow = isLocalLan && !isGithubPages;
+  els.certDownloadLink.hidden = !shouldShow;
+  els.certHttpDownloadLink.hidden = !shouldShow;
+  if (shouldShow) {
+    els.certHttpDownloadLink.href = `http://${host}:8080/cert-download/rootCA.crt`;
+  }
 }
 
 function buildInstallDiagnostics(swReady, standalone) {

@@ -1,12 +1,13 @@
 "use strict";
 
-const CACHE_NAME = "offline-webrtc-chat-v7";
+const CACHE_NAME = "offline-webrtc-chat-v10";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./manifest.json",
+  "./rootCA.crt",
   "./vendor/qrcode.min.js",
   "./vendor/jsQR.js",
   "./icon-192.png",
